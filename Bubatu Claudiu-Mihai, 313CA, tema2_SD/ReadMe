@@ -1,0 +1,65 @@
+@COPYRIGHT 2021 Bubatu Claudiu-Mihai, 313CA
+--------------------------------------------------------------------------------
+
+  In server.c:
+  
+    - mi-am definit structurile data, respectiv server_memory;
+    
+  * in structura server-ului am retinut: 
+  buckets -> un vector de liste simplu inlantuite
+  size -> cate perechi cheie-valoare se afla in hashtable
+  hmax -> numarul maxim de buckets-uri
+  
+  * in struct data am retinut cheia si valoarea produsului
+  
+    - init_server_memory : l-am folosit pentru a aloca memorie
+  pentru un server
+  
+    - server_store :  stocheaza un produs (cheie - valoare) pe
+  hashtable
+  
+    - server_remove : sterge un produs (cheie - valoare) din hashtable
+  
+    - server_retrieve : returneaza valoarea asociata lui key din hashtable
+  
+    - free_server_memory : elibereaza memoria unui server
+
+--------------------------------------------------------------------------------
+
+  In load_balancer.c:
+  
+    - mi-am definit structurile: load_balancer, respectiv info
+    
+  * struct info contine:
+  hash -> pentru a retine hash-ul server-ului
+  server_id -> pentru a retine id-ul server-ului
+  server_tag -> pentru a retine eticheta server-ului
+  server -> pentru a retine server-ul
+    
+  * load_balancer contine o lista simplu inlantuita, in cadrul careia
+  fiecare nod este de tip struct info
+  
+     - init_load_balancer: l-am folosit pentru a initializa balancer-ul
+    si lista de noduri
+    
+     - loader_store : stochează un produs (cheia - ID,
+     valoarea - numele produsului) pe unul dintre serverele disponibile 
+     folosind consistent hashing
+     
+     - loader_retrieve : calculează pe ce server este stocat key
+    şi îi extrage valoarea
+    
+     - redistribution : am comparat toate hash-urile cheilor de pe serverele
+     vecine cu hash-ul serverelui curent si le-am redistribuit; am folosit
+     aceasta functie pentru a redistribui obiectele pe hashring in
+     momentul in care adaug un server nou (+ replicile sale)  
+    
+     - loader_add_server : adaugă un nou server în sistem şi
+     rebalansează obiectele cu ajutorul functiei redistribution
+     
+     - loader_remove_server : scoate un server din sistem; dupa ce am scos
+     serverul (+replicile) am rebalansat obiectele de pe hashring
+     
+     - free_load_balancer : am eliberat memoria din load balancer;
+     am salvat server-ul de sters in remove si am folosit functia de
+     free_server_memory din server.c pentru a elibera memoria acestuia
